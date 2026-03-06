@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#1f4e79" />
+  <title>Route Tracker</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">RT</div>
+      <div>
+        <div class="title">Route Tracker</div>
+        <div class="subtitle" id="subtitle">Offline PWA • Start time 08:30 • Weekdays only</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn ghost" id="btnExport">Export</button>
+      <label class="btn ghost file">
+        Import
+        <input type="file" id="fileImport" accept="application/json" />
+      </label>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="row wrap gap">
+        <div class="kpi">
+          <div class="kpi-label">Today’s Pace</div>
+          <div class="kpi-value" id="paceStatus">—</div>
+          <div class="kpi-sub" id="paceSub">Start 08:30 • Target 20 calls</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Today’s Cluster</div>
+          <div class="kpi-value" id="todayCluster">—</div>
+          <div class="kpi-sub" id="todayClusterSub">From 90‑day call cycle</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Targets (Actives)</div>
+          <div class="kpi-value" id="targetsKpi">—</div>
+          <div class="kpi-sub" id="targetsSub">East 35 • North 35</div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="seeToday">See Today</button>
+      <button class="tab" data-tab="visit">Log Visit</button>
+      <button class="tab" data-tab="customers">Customers</button>
+      <button class="tab" data-tab="clusters">Call Cycle</button>
+      <button class="tab" data-tab="reports">Reports</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+
+    <section id="tab-seeToday" class="tabpanel active">
+      <div class="card">
+        <div class="row between">
+          <h2>See Today (Editable)</h2>
+          <div class="row gap">
+            <button class="btn" id="btnGenerateToday">Generate</button>
+            <button class="btn ghost" id="btnClearToday">Clear</button>
+          </div>
+        </div>
+        <p class="muted">Auto‑prioritised for cycle compliance + growth. You can reorder, remove, or add customers.</p>
+        <div id="todayList" class="list"></div>
+      </div>
+    </section>
+
+    <section id="tab-visit" class="tabpanel">
+      <div class="card">
+        <div class="row between">
+          <h2>Log Visit</h2>
+          <button class="btn ghost" id="btnGps">GPS Check‑in (optional)</button>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label>Customer</label>
+            <input id="visitCustomer" list="customerDatalist" placeholder="Start typing customer name…" />
+            <datalist id="customerDatalist"></datalist>
+          </div>
+          <div>
+            <label>Route Group</label>
+            <select id="visitRouteGroup">
+              <option>East</option>
+              <option>North</option>
+            </select>
+          </div>
+          <div>
+            <label>Outcome</label>
+            <select id="visitOutcome">
+              <option value="no_contact">No contact</option>
+              <option value="staff">Spoke to staff</option>
+              <option value="decision_maker">Decision maker</option>
+              <option value="sample">Sample placed</option>
+              <option value="trial">Trial started</option>
+              <option value="active">Active confirmed</option>
+              <option value="standing_order">Standing order</option>
+            </select>
+          </div>
+          <div>
+            <label>Notes</label>
+            <textarea id="visitNotes" rows="3" placeholder="What happened / next steps…"></textarea>
+          </div>
+          <div>
+            <label>Key Contact</label>
+            <input id="visitKeyContact" placeholder="Name / role" />
+          </div>
+          <div>
+            <label>Next Action</label>
+            <input id="visitNextAction" placeholder="e.g., follow up Wednesday / bring samples" />
+          </div>
+        </div>
+
+        <div class="row gap">
+          <button class="btn" id="btnSaveVisit">Save Visit</button>
+          <button class="btn ghost" id="btnTestReset">Week Reset (clears today list)</button>
+        </div>
+
+        <div class="divider"></div>
+        <h3>Recent Visits</h3>
+        <div id="recentVisits" class="list"></div>
+      </div>
+    </section>
+
+    <section id="tab-customers" class="tabpanel">
+      <div class="card">
+        <div class="row between">
+          <h2>Customers</h2>
+          <div class="row gap">
+            <button class="btn ghost" id="btnAddCustomer">Add Customer (manual)</button>
+          </div>
+        </div>
+        <div class="row wrap gap">
+          <div class="pill"><span class="dot yellow"></span> Existing (cycle tracked)</div>
+          <div class="pill"><span class="dot gray"></span> Prospect</div>
+          <div class="pill"><span class="dot red"></span> Overdue</div>
+          <div class="pill"><span class="dot amber"></span> Due</div>
+          <div class="pill"><span class="dot green"></span> Compliant</div>
+        </div>
+        <div class="row wrap gap">
+          <input id="customerSearch" placeholder="Search customer…" />
+          <select id="customerFilter">
+            <option value="all">All</option>
+            <option value="existing">Existing</option>
+            <option value="prospect">Prospects</option>
+            <option value="overdue">Overdue</option>
+            <option value="due">Due</option>
+          </select>
+        </div>
+        <div id="customerList" class="list"></div>
+      </div>
+    </section>
+
+    <section id="tab-clusters" class="tabpanel">
+      <div class="card">
+        <div class="row between">
+          <h2>90‑Day Call Cycle</h2>
+          <div class="row gap">
+            <button class="btn ghost" id="btnMarkClusterDone">Mark Today Complete</button>
+          </div>
+        </div>
+        <p class="muted">Weekdays only. Optional second nearby cluster allowed after completing primary.</p>
+        <div id="clusterList" class="list"></div>
+      </div>
+    </section>
+
+    <section id="tab-reports" class="tabpanel">
+      <div class="card">
+        <div class="row between">
+          <h2>KPI Reports</h2>
+          <button class="btn" id="btnExportKpi">Export KPI</button>
+        </div>
+        <p class="muted">Choose a period and export (offline). Files are saved to your device.</p>
+        <div class="grid">
+          <div>
+            <label>Period</label>
+            <select id="reportPeriod">
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="quarter">This Quarter</option>
+              <option value="ytd">Year to Date</option>
+            </select>
+          </div>
+          <div>
+            <label>Route Group</label>
+            <select id="reportRoute">
+              <option value="all">All</option>
+              <option value="East">East</option>
+              <option value="North">North</option>
+            </select>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <h3>Snapshot</h3>
+        <div id="reportSnapshot" class="list"></div>
+      </div>
+    </section>
+
+    <section id="tab-settings" class="tabpanel">
+      <div class="card">
+        <h2>Settings</h2>
+        <div class="grid">
+          <div>
+            <label>Daily start time</label>
+            <input id="startTime" value="08:30" />
+          </div>
+          <div>
+            <label>Daily call target</label>
+            <input id="dailyTarget" type="number" value="20" />
+          </div>
+          <div>
+            <label>Cycle rule (existing)</label>
+            <input id="cycleRule" value="2 visits / 21 days" disabled />
+          </div>
+          <div>
+            <label>Targets (actives)</label>
+            <div class="row gap">
+              <input id="targetEast" type="number" value="35" />
+              <input id="targetNorth" type="number" value="35" />
+            </div>
+          </div>
+        </div>
+        <div class="row gap">
+          <button class="btn" id="btnSaveSettings">Save Settings</button>
+          <button class="btn ghost danger" id="btnFactoryReset">Factory Reset (clears all data)</button>
+        </div>
+        <p class="muted">Data is stored on your device. Use Export/Import to sync between phone and tablet.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "app_version": "Final v2",
+  "cycle_rule": "2 visits per 21 days",
+  "routes": {
+    "Route 3": {
+      "target_actives": 35
+    },
+    "Route 5": {
+      "target_actives": 35
+    }
+  },
+  "route_group": "Routes 3-5 Combined (Group B)",
+  "data_retention_until": "February 2027",
+  "customers": [],
+  "note": "Import this file inside the app before starting 2 March."
+}
