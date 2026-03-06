@@ -1,3 +1,18 @@
+async function initialiseApp() {
+  const customers = await loadCustomersFromDB()
+  const clusters = await loadClustersFromDB()
+
+  window.appData = {
+    customers,
+    clusters
+  }
+
+  renderCustomers(customers)
+  generateTodayList(customers, clusters)
+}
+
+initialiseApp()
+
 function byId(id) {
   return document.getElementById(id)
 }
@@ -369,3 +384,4 @@ window.addEventListener("load", async () => {
   setTab("seeToday")
   await initialiseApp()
 })
+
